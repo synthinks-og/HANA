@@ -11,6 +11,7 @@ print(Fore.CYAN + Style.BRIGHT + """███████║██║  ██║
 print(Fore.CYAN + Style.BRIGHT + """██╔══██║██║  ██║██╔══╝  ██║╚██╔╝██║██║██║  ██║██║╚██╗██║""" + Style.RESET_ALL)
 print(Fore.CYAN + Style.BRIGHT + """██║  ██║██████╔╝██║     ██║ ╚═╝ ██║██║██████╔╝██║ ╚████║""" + Style.RESET_ALL)
 print(Fore.CYAN + Style.BRIGHT + """╚═╝  ╚═╝╚═════╝ ╚═╝     ╚═╝     ╚═╝╚═╝╚═════╝ ╚═╝  ╚═══╝""" + Style.RESET_ALL)
+print(Fore.CYAN + Style.BRIGHT + """t.me/dpangestuw31""" + Style.RESET_ALL)
 print(Fore.CYAN + Style.BRIGHT + """Auto Deposit ETH for HANA Network""" + Style.RESET_ALL)
 
 # Konfigurasi
