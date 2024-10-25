@@ -17,7 +17,7 @@ print(Fore.CYAN + Style.BRIGHT + """Auto Deposit ETH for HANA Network""" + Style
 # Konfigurasi
 RPC_URL = "https://mainnet.base.org"
 CONTRACT_ADDRESS = "0xC5bf05cD32a14BFfb705Fb37a9d218895187376c"
-AMOUNT_ETH = 0.000000000000000001  # Jumlah ETH yang akan didepositkan
+AMOUNT_ETH = 0.0000000001  # Jumlah ETH yang akan didepositkan
 
 web3 = Web3(Web3.HTTPProvider(RPC_URL))
 
