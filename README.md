@@ -28,3 +28,5 @@ pip install web3 colorama
 python3 hana.py
 ```
 **Create pvkey.txt and input Private Key**
+
+**Put the Bearer token in token.txt to run grow.py**
