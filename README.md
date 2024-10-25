@@ -23,6 +23,6 @@ pip install web3 colorama
 ```bash
 python3 hana.py
 ```
-**Create Pvkey.txt and input Private Key**
+**Create pvkey.txt and input Private Key**
 
 **Support Multi Account**
