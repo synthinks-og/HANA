@@ -69,7 +69,6 @@ for i in range(num_transactions):
 
             # If 50 transactions have been sent, reset for the next batch
             if tx_count >= 50:
-                print(Fore.MAGENTA + "Preparing for the next batch...")
                 tx_count = 0  # Reset the counter
 
             time.sleep(1)  # Adjust the delay as needed
