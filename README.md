@@ -7,6 +7,7 @@
 - Register here : https://hanafuda.hana.network/dashboard
 - Regist with Google
 - Submit Code : 5147WQ
+- **24-Hour Loop**: The script will automatically wait for 24 hours after completing all transactions, then repeat the transaction process with the same number of transactions specified initially.
 
 ## Instalation
 ```bash
