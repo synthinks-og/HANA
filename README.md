@@ -1,6 +1,7 @@
 # Auto Deposit ETH for HANA Network
 
-<img width="472" alt="image" src="https://github.com/user-attachments/assets/88f10241-2e08-4fe4-9d66-d4dc62bc6737">
+<img width="493" alt="image" src="https://github.com/user-attachments/assets/19b899ef-aa12-4ac2-b59e-1693c2f55afd">
+
 
 ## Description 
 - Register here : https://hanafuda.hana.network/dashboard
