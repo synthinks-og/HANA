@@ -23,46 +23,43 @@ web3 = Web3(Web3.HTTPProvider(RPC_URL))
 
 num_transactions = int(input(Fore.YELLOW + "Masukkan jumlah transaksi yang ingin dilakukan: " + Style.RESET_ALL))
 
-while True:
-    with open("pvkey.txt", "r") as file:
-        private_keys = [line.strip() for line in file if line.strip()]
+with open("pvkey.txt", "r") as file:
+    private_keys = [line.strip() for line in file if line.strip()]
 
-    contract_abi = '''
-    [
-        {
-            "constant": false,
-            "inputs": [],
-            "name": "depositETH",
-            "outputs": [],
-            "stateMutability": "payable",
-            "type": "function"
-        }
-    ]
-    '''
+contract_abi = '''
+[
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "depositETH",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    }
+]
+'''
 
-    amount_wei = web3.to_wei(AMOUNT_ETH, 'ether')
+amount_wei = web3.to_wei(AMOUNT_ETH, 'ether')
+contract = web3.eth.contract(address=CONTRACT_ADDRESS, abi=json.loads(contract_abi))
 
-    contract = web3.eth.contract(address=CONTRACT_ADDRESS, abi=json.loads(contract_abi))
+for i in range(num_transactions):
+    for private_key in private_keys:
+        from_address = web3.eth.account.from_key(private_key).address
+        short_from_address = from_address[:4] + "..." + from_address[-4:]
 
-    for i in range(num_transactions):
-        for private_key in private_keys:
-            from_address = web3.eth.account.from_key(private_key).address
-            short_from_address = from_address[:4] + "..." + from_address[-4:]
-            
-            transaction = contract.functions.depositETH().build_transaction({
-                'from': from_address,
-                'value': amount_wei,
-                'gas': 100000,
-                'gasPrice': web3.eth.gas_price,
-                'nonce': web3.eth.get_transaction_count(from_address),
-            })
-            
-            signed_txn = web3.eth.account.sign_transaction(transaction, private_key=private_key)
-            
-            tx_hash = web3.eth.send_raw_transaction(signed_txn.raw_transaction)
-            print(Fore.GREEN + f"Transaksi ke-{i+1} berhasil dikirim dari {short_from_address} dengan hash: {tx_hash.hex()}")
-            
-            time.sleep(10)
+        transaction = contract.functions.depositETH().build_transaction({
+            'from': from_address,
+            'value': amount_wei,
+            'gas': 100000,
+            'gasPrice': web3.eth.gas_price,
+            'nonce': web3.eth.get_transaction_count(from_address),
+        })
 
-    print(Fore.MAGENTA + "Menunggu 24 jam sebelum menjalankan ulang...")
-    time.sleep(86400)
+        signed_txn = web3.eth.account.sign_transaction(transaction, private_key=private_key)
+
+        tx_hash = web3.eth.send_raw_transaction(signed_txn.raw_transaction)
+        print(Fore.GREEN + f"Transaksi ke-{i + 1} berhasil dikirim dari {short_from_address} dengan hash: {tx_hash.hex()}")
+
+        time.sleep(3)
+
+print(Fore.MAGENTA + "Selesai melakukan transaksi.")
