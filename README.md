@@ -2,8 +2,7 @@
 
 <img width="484" alt="image" src="https://github.com/user-attachments/assets/6f263d6e-5449-4876-a2d4-b269f04611f6">
 <img width="484" alt="Screenshot 2024-10-26 at 08 18 50" src="https://github.com/user-attachments/assets/b4de1819-20a7-48f2-861e-9b9e2d7532b8">
-<img width="484" alt="Screenshot 2024-10-26 at 08 18 50" src="https://github.com/user-attachments/assets/1b38166e-54df-4ee8-9dcf-3c929c8ef681">
-
+<img width="511" alt="image" src="https://github.com/user-attachments/assets/5e75477a-8cbf-422b-b350-878489dd0907">
 
 ## Description 
 **Support Multi Account** 
