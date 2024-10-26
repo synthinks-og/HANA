@@ -31,3 +31,5 @@ python3 hana.py
 **Create pvkey.txt and input Private Key**
 
 **Put the Refresh token in token.json to run growmulti.py**
+
+**Buat ambil refresh_token Aplication > Session Storage**
