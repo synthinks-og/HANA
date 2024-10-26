@@ -16,7 +16,7 @@ print(Fore.CYAN + Style.BRIGHT + """Auto Deposit ETH for HANA Network""" + Style
 
 RPC_URL = "https://mainnet.base.org"
 CONTRACT_ADDRESS = "0xC5bf05cD32a14BFfb705Fb37a9d218895187376c"
-AMOUNT_ETH = 0.0000000001  # Amount of ETH to be deposited
+AMOUNT_ETH = 0.0000001  # Amount of ETH to be deposited
 
 web3 = Web3(Web3.HTTPProvider(RPC_URL))
 
@@ -54,7 +54,7 @@ for i in range(num_transactions):
             transaction = contract.functions.depositETH().build_transaction({
                 'from': from_address,
                 'value': amount_wei,
-                'gas': 100000,
+                'gas': 50000,
                 'gasPrice': web3.eth.gas_price,
                 'nonce': nonces[private_key],  # Use the tracked nonce
             })
