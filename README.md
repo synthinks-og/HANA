@@ -30,4 +30,4 @@ python3 hana.py
 ```
 **Create pvkey.txt and input Private Key**
 
-**Put the Bearer token in token.txt to run grow.py**
+**Put the Refresh token in token.json to run growmulti.py**
