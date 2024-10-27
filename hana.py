@@ -1,5 +1,7 @@
-from web3 import Web3
+import requests
 import json
+import logging
+from web3 import Web3
 import time
 from colorama import init, Fore, Style
 
@@ -14,16 +16,81 @@ print(Fore.CYAN + Style.BRIGHT + """╚═╝  ╚═╝╚═════╝ �
 print(Fore.CYAN + Style.BRIGHT + """t.me/dpangestuw31""" + Style.RESET_ALL)
 print(Fore.CYAN + Style.BRIGHT + """Auto Deposit ETH for HANA Network""" + Style.RESET_ALL)
 
+# Refresh access token
+def refresh_access_token(refresh_token):
+    api_key = "AIzaSyDipzN0VRfTPnMGhQ5PSzO27Cxm3DohJGY"
+    url = f"https://securetoken.googleapis.com/v1/token?key={api_key}"
+
+    headers = {
+        "Content-Type": "application/json",
+    }
+
+    body = json.dumps({
+        "grant_type": "refresh_token",
+        "refresh_token": refresh_token,
+    })
+
+    response = requests.post(url, headers=headers, data=body)
+
+    if response.status_code != 200:
+        error_response = response.json()
+        raise Exception(f"Failed to refresh access token: {error_response['error']}")
+
+    return response.json()
+
+# Validate transaction hash
+def validate_tx_hash(tx_hash):
+    if not isinstance(tx_hash, str) or not tx_hash.startswith('0x') or len(tx_hash) != 66:
+        raise ValueError(f"Invalid transaction hash format: {tx_hash}")
+    if any(c not in '0123456789abcdefABCDEF' for c in tx_hash[2:]):
+        raise ValueError(f"Transaction hash contains invalid characters: {tx_hash}")
+
+# Function to sync transaction
+def sync_transaction(tx_hash, chain_id, access_token):
+    url = "https://hanafuda-backend-app-520478841386.us-central1.run.app/graphql"
+    query = """
+        mutation SyncEthereumTx($chainId: Int!, $txHash: String!) {
+          syncEthereumTx(chainId: $chainId, txHash: $txHash)
+        }
+    """
+    variables = {
+        "chainId": chain_id,
+        "txHash": tx_hash
+    }
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f"Bearer {access_token}"
+    }
+    
+    response = requests.post(url, json={"query": query, "variables": variables}, headers=headers)
+    if response.status_code != 200:
+        raise Exception(f"Failed to sync transaction: {response.json()}")
+    return response.json()
+
+# Load the refresh token from file
+def load_refresh_token_from_file():
+    try:
+        with open("tokens.json", "r") as token_file:
+            tokens = json.load(token_file)
+            return tokens[0].get("refresh_token")
+    except FileNotFoundError:
+        logging.error("File 'tokens.json' not found.")
+        print(Fore.RED + Style.BRIGHT + "File 'tokens.json' tidak ditemukan." + Style.RESET_ALL)
+        exit()
+    except json.JSONDecodeError:
+        logging.error("Error decoding JSON from 'tokens.json'.")
+        exit()
+
+# Main script setup
 RPC_URL = "https://mainnet.base.org"
 CONTRACT_ADDRESS = "0xC5bf05cD32a14BFfb705Fb37a9d218895187376c"
-AMOUNT_ETH = 0.0000001  # Amount of ETH to be deposited
+AMOUNT_ETH = 0.0000000001
 
 web3 = Web3(Web3.HTTPProvider(RPC_URL))
 
 num_transactions = int(input(Fore.YELLOW + "Enter the number of transactions to be executed: " + Style.RESET_ALL))
 
-with open("pvkey.txt", "r") as file:
-    private_keys = [line.strip() for line in file if line.strip()]
+private_keys = [line.strip() for line in open("pvkey.txt") if line.strip()]
 
 contract_abi = '''
 [
@@ -43,7 +110,12 @@ contract = web3.eth.contract(address=CONTRACT_ADDRESS, abi=json.loads(contract_a
 
 # Track the nonces for each key
 nonces = {key: web3.eth.get_transaction_count(web3.eth.account.from_key(key).address) for key in private_keys}
-tx_count = 0  # Counter for transactions sent
+tx_count = 0
+
+chain_id = 8453
+
+# Load refresh token
+refresh_token = load_refresh_token_from_file()
 
 for i in range(num_transactions):
     for private_key in private_keys:
@@ -51,32 +123,58 @@ for i in range(num_transactions):
         short_from_address = from_address[:4] + "..." + from_address[-4:]
 
         try:
+            # Refresh access token
+            access_token_info = refresh_access_token(refresh_token)
+            access_token = access_token_info["access_token"]
+            refresh_token = access_token_info.get("refresh_token", refresh_token)
+
             transaction = contract.functions.depositETH().build_transaction({
                 'from': from_address,
                 'value': amount_wei,
                 'gas': 50000,
                 'gasPrice': web3.eth.gas_price,
-                'nonce': nonces[private_key],  # Use the tracked nonce
+                'nonce': nonces[private_key],
             })
 
             signed_txn = web3.eth.account.sign_transaction(transaction, private_key=private_key)
             tx_hash = web3.eth.send_raw_transaction(signed_txn.raw_transaction)
-            print(Fore.GREEN + f"Transaction {i + 1} sent from {short_from_address} with hash: {tx_hash.hex()}")
 
-            # Increment nonce after sending a transaction
+            # Wait for transaction receipt
+            tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+
+            # Get the transaction hash in hex format
+            tx_hash_hex = tx_receipt['transactionHash'].hex()
+            print(Fore.GREEN + f"Transaction {i + 1} sent from {short_from_address} with hash: {tx_hash_hex}")
+
+            # Ensure the transaction hash is prefixed with '0x'
+            if not tx_hash_hex.startswith('0x'):
+                tx_hash_hex = '0x' + tx_hash_hex
+
+            # Validate the transaction hash before syncing
+            validate_tx_hash(tx_hash_hex)
+
+            # Print the hash for debugging
+            print(Fore.YELLOW + f"Syncing transaction with hash: {tx_hash_hex}", end='\r')
+
+            # Sync the transaction
+            sync_response = sync_transaction(tx_hash_hex, chain_id, access_token)
+
+            # Check if the sync was successful
+            if sync_response.get('data', {}).get('syncEthereumTx'):
+                print(Fore.CYAN + f"Sync {short_from_address} successful with hash: {tx_hash_hex}")
+            else:
+                print(Fore.RED + "Sync failed!")
+
+            # Increment nonce and transaction counter
             nonces[private_key] += 1
-            tx_count += 1  # Increment the transaction counter
+            tx_count += 1
 
-            # If 50 transactions have been sent, reset for the next batch
-            if tx_count >= 50:
-                tx_count = 0  # Reset the counter
-
-            time.sleep(1)  # Adjust the delay as needed
+            time.sleep(1)
 
         except Exception as e:
             if 'nonce too low' in str(e):
                 print(Fore.RED + f"Nonce too low for {short_from_address}. Fetching the latest nonce...")
-                nonces[private_key] = web3.eth.get_transaction_count(from_address)  # Update to the latest nonce
+                nonces[private_key] = web3.eth.get_transaction_count(from_address)
             else:
                 print(Fore.RED + f"Error sending transaction from {short_from_address}: {str(e)}")
 
