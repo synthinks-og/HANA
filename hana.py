@@ -13,13 +13,11 @@ print(Fore.CYAN + Style.BRIGHT + """███████║██║  ██║
 print(Fore.CYAN + Style.BRIGHT + """██╔══██║██║  ██║██╔══╝  ██║╚██╔╝██║██║██║  ██║██║╚██╗██║""" + Style.RESET_ALL)
 print(Fore.CYAN + Style.BRIGHT + """██║  ██║██████╔╝██║     ██║ ╚═╝ ██║██║██████╔╝██║ ╚████║""" + Style.RESET_ALL)
 print(Fore.CYAN + Style.BRIGHT + """╚═╝  ╚═╝╚═════╝ ╚═╝     ╚═╝     ╚═╝╚═╝╚═════╝ ╚═╝  ╚═══╝""" + Style.RESET_ALL)
-print(Fore.CYAN + Style.BRIGHT + """t.me/dpangestuw""" + Style.RESET_ALL)
-print(Fore.CYAN + Style.BRIGHT + """Auto Deposit ETH for HANA Network""" + Style.RESET_ALL)
+print(Fore.CYAN + Style.BRIGHT + """   Auto Deposit ETH for HANA Network x t.me/dpangestuw""" + Style.RESET_ALL)
 
 # Refresh access token
 def refresh_access_token(refresh_token):
-    api_key = "AIzaSyDipzN0VRfTPnMGhQ5PSzO27Cxm3DohJGY"
-    url = f"https://securetoken.googleapis.com/v1/token?key={api_key}"
+    url = f"https://securetoken.googleapis.com/v1/token?key=AIzaSyDipzN0VRfTPnMGhQ5PSzO27Cxm3DohJGY"
 
     headers = {
         "Content-Type": "application/json",
